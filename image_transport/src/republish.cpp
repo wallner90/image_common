@@ -60,7 +60,7 @@ int main(int argc, char ** argv)
 
   if (vargv.size() < 3) {
     // Use all available transports for output
-    auto pub = image_transport::create_publisher(node.get(), out_topic);
+    auto pub = image_transport::create_publisher(node.get(), out_topic, rmw_qos_profile_sensor_data);
 
     // Use Publisher::publish as the subscriber callback
     typedef void (image_transport::Publisher::* PublishMemFn)(const sensor_msgs::msg::Image::
@@ -69,7 +69,7 @@ int main(int argc, char ** argv)
 
     auto sub =
       image_transport::create_subscription(node.get(), in_topic,
-        std::bind(pub_mem_fn, &pub, std::placeholders::_1), in_transport);
+        std::bind(pub_mem_fn, &pub, std::placeholders::_1), in_transport, rmw_qos_profile_sensor_data);
     rclcpp::spin(node);
   } else {
     // Use one specific transport for output
@@ -89,7 +89,7 @@ int main(int argc, char ** argv)
     PublishMemFn pub_mem_fn = &Plugin::publishPtr;
     auto sub =
       image_transport::create_subscription(node.get(), in_topic,
-        std::bind(pub_mem_fn, pub.get(), std::placeholders::_1), in_transport);
+        std::bind(pub_mem_fn, pub.get(), std::placeholders::_1), in_transport, rmw_qos_profile_sensor_data);
     rclcpp::spin(node);
   }
 
